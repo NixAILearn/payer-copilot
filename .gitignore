@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/payer.db
+data/checkpoints.db*
+data/chroma/
+evals/results/
+traces/
+outbox/
+.DS_Store

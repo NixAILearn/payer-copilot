@@ -1,0 +1,31 @@
+# Payer Copilot settings. Edit this file, not the code.
+
+llm:
+  base_url: "http://localhost:1235/v1"   # LM Studio local server
+  api_key: "lm-studio"                    # LM Studio ignores it, but the client needs a value
+  chat_model: "google/gemma-4-12b-qat"  # run: uv run python -m copilot.llm
+  embedding_model: "text-embedding-nomic-embed-text-v1.5"
+  embedding_document_prefix: "search_document: "   # nomic-embed-text wants these task prefixes
+  embedding_query_prefix: "search_query: "
+  mode: "json_action"                     # json_action (default) or native_tools
+  temperature: 0.0                        # routing, tool choice and review
+  max_tokens: 4096                        # cap on one reply, including hidden "thinking" tokens
+  timeout_seconds: 300
+  thinking:               # let the model think (hidden reasoning) before replying? on = slower, off = fast
+    agents: false         # claims and benefits agents (same scores, 3x faster without thinking)
+    prior_auth: true      # judges criteria against claim history; without thinking it misread the PT dates
+    supervisor: false     # picks a route and IDs
+    reviewer: false       # checks a draft against three rules; with thinking on it ran out of room
+    summary: false        # folds old turns into the session summary
+
+data:
+  db_path: "data/payer.db"
+  policies_dir: "data/policies"
+  outbox_dir: "outbox"
+  chroma_dir: "data/chroma"   # the vector index, rebuilt by: uv run python -m copilot.rag.ingest
+  policy_top_k: 3             # passages search_policy returns
+  checkpoint_db: "data/checkpoints.db"   # LangGraph saves paused and finished runs here
+  today: "2026-11-15"   # the app's fixed "today"; must match TODAY in data/generate.py
+
+agents:
+  max_tool_calls: 4     # per run; design limit
