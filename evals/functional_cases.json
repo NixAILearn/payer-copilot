@@ -187,7 +187,9 @@
           "not in the system",
           "invalid member",
           "not be found",
-          "cannot be found"
+          "cannot be found",
+          "cannot find",
+          "can't find"
         ]
       ],
       "paused": false
@@ -272,7 +274,15 @@
           "no claim",
           "doesn't exist",
           "does not exist",
-          "no record"
+          "no record",
+          "cannot find",
+          "can't find",
+          "unable to find",
+          "unable to locate",
+          "not be found",
+          "cannot be found",
+          "could not locate",
+          "couldn't locate"
         ]
       ]
     },

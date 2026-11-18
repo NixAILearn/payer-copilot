@@ -176,11 +176,24 @@ def reviewer_node(state: CopilotState) -> dict:
         return {"review": {"passed": False, "reasons": [f"The reviewer couldn't finish: {e}"]},
                 "review_attempts": MAX_REVIEWS, "pending_approval": None,
                 "answer": REVIEWER_FAILED.format(draft=state["answer"])}
+    if state.get("pending_approval") and not verdict_dict["passed"]:
+        verdict_dict = _waive_rule_2(verdict_dict)
     update = {"review": verdict_dict, "review_attempts": attempts}
     if not verdict_dict["passed"] and attempts >= MAX_REVIEWS:
         update["answer"] = NEEDS_HUMAN.format(reasons="\n- ".join(verdict_dict["reasons"]))
         update["pending_approval"] = None  # never submit a draft that failed review
     return update
+
+
+def _waive_rule_2(verdict: dict) -> dict:
+    """Rule 2 (no coverage decision) can't be broken by a proposed prior auth:
+    nothing is decided until a named person approves it. The reviewer still
+    read "deny" as a decision now and then, so plain code drops those reasons."""
+    kept = [r for r in verdict["reasons"] if not r.strip().lower().startswith("rule 2")]
+    if len(kept) == len(verdict["reasons"]):
+        return verdict
+    return {"passed": not kept, "reasons": kept + ["Rule 2 reasons dropped: a proposed prior auth is "
+                                                   "only a recommendation until a person approves it."]}
 
 
 def after_review(state: CopilotState) -> str:

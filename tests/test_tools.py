@@ -345,3 +345,12 @@ def test_prior_auth_answer_names_its_document():
     criteria = Evidence(tool="get_auth_criteria", arguments={}, result={"policy_document": "prior_auth_imaging.md"})
     assert needs_submission([criteria], "The criteria are ...")
     assert needs_submission([criteria], "The criteria are ...\nSources: prior_auth_imaging.md") is None
+
+
+def test_rule_2_is_waived_for_a_proposed_prior_auth():
+    from copilot.graph import _waive_rule_2
+
+    only_rule_2 = {"passed": False, "reasons": ["Rule 2: The draft makes a new coverage decision with 'deny'."]}
+    assert _waive_rule_2(only_rule_2)["passed"]
+    mixed = {"passed": False, "reasons": ["Rule 1: '$9,999' is not in the evidence.", "Rule 2: says deny."]}
+    assert not _waive_rule_2(mixed)["passed"]
